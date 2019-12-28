@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: gateway
+  boot:
+    admin:
+      client:
+        url: http://localhost:8761/admin
+  cloud:
+    config:
+      uri: http://localhost:8761/config
+  profiles:
+    active: dev
