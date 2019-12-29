@@ -18,7 +18,7 @@
         <java.version>11</java.version>
         <spring-boot-admin.version>2.2.1</spring-boot-admin.version>
         <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
-        <git-commit-id-plugin.version>3.0.1</git-commit-id-plugin.version>
+        <git-commit-id-plugin.version>4.0.0</git-commit-id-plugin.version>
     </properties>
 
     <dependencies>
@@ -91,6 +91,16 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <executable>true</executable>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>pl.project13.maven</groupId>
@@ -114,7 +124,6 @@
                     </includeOnlyProperties>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 
