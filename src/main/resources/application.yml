@@ -17,8 +17,6 @@ management:
   info:
     git:
       mode: full
-  security:
-    enabled: false
 
 eureka:
   instance:
@@ -48,4 +46,5 @@ eureka:
     instance-info-replication-interval-seconds: 10
     registry-fetch-interval-seconds: 10
 
-
+zuul:
+  sensitiveHeaders: Cookie,Set-Cookie

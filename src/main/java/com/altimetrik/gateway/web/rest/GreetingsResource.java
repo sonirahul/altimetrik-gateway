@@ -6,12 +6,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/gateway")
+@RequestMapping("/api")
 public class GreetingsResource {
 
     @GetMapping("/greet")
     public ResponseEntity<String> greet() {
-        return ResponseEntity.ok("hello rahul soni");
+        return ResponseEntity.ok("Greeting from the gateway");
     }
-
 }
