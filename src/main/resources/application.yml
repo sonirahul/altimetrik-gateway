@@ -56,3 +56,4 @@ springdoc:
 altimetrik:
   jwt:
     secret: ThisValueWillComeFromSpringConfigServerWhichInTurnWouldFetchItFromGitRepo
+    validityInSeconds: 600
