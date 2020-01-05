@@ -1,26 +1,31 @@
 package com.altimetrik.gateway.exception;
 
+import org.springframework.http.HttpStatus;
+
 import java.util.Date;
 
 public class ExceptionResponse {
 
-    private Date timeStamp;
+    private HttpStatus error;
     private String message;
-    private String details;
+    private Integer status;
+    private Date timestamp;
+    private String path;
 
-
-    public ExceptionResponse(Date timeStamp, String message, String details) {
-        this.timeStamp = timeStamp;
+    public ExceptionResponse(Date timestamp, String message, String path, HttpStatus status) {
+        this.timestamp = timestamp;
         this.message = message;
-        this.details = details;
+        this.path = path;
+        this.error = status;
+        this.status = status.value();
     }
 
-    public Date getTimeStamp() {
-        return timeStamp;
+    public Date getTimestamp() {
+        return timestamp;
     }
 
-    public void setTimeStamp(Date timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
 
     public String getMessage() {
@@ -31,20 +36,27 @@ public class ExceptionResponse {
         this.message = message;
     }
 
-    public String getDetails() {
-        return details;
+    public String getPath() {
+        return path;
     }
 
-    public void setDetails(String details) {
-        this.details = details;
+    public void setPath(String path) {
+        this.path = path;
     }
 
-    @Override
-    public String toString() {
-        return "ExceptionResponse{" +
-                "timeStamp=" + timeStamp +
-                ", message='" + message + '\'' +
-                ", details='" + details + '\'' +
-                '}';
+    public HttpStatus getError() {
+        return error;
+    }
+
+    public void setError(HttpStatus error) {
+        this.error = error;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

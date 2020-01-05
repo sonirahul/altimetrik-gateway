@@ -14,6 +14,7 @@ import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,9 +23,7 @@ import java.util.List;
 @EnableSwagger2
 public class SwaggerConfiguration {
 
-    public static final String AUTHORIZATION_HEADER = "Authorization";
-    public static final String DEFAULT_INCLUDE_PATTERN = "/api/.*";
-    private final Logger log = LoggerFactory.getLogger(SwaggerConfiguration.class);
+    private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Bean
     public Docket swaggerSpringfoxDocket() {
@@ -61,20 +60,20 @@ public class SwaggerConfiguration {
                 .useDefaultResponseMessages(false);
 
         docket = docket.select()
-                .paths(PathSelectors.regex(DEFAULT_INCLUDE_PATTERN))
+                .paths(PathSelectors.regex(Constants.DEFAULT_INCLUDE_PATTERN))
                 .build();
         return docket;
     }
 
 
     private ApiKey apiKey() {
-        return new ApiKey("JWT", AUTHORIZATION_HEADER, "header");
+        return new ApiKey(Constants.JWT, Constants.AUTHORIZATION, Constants.HEADER);
     }
 
     private SecurityContext securityContext() {
         return SecurityContext.builder()
                 .securityReferences(defaultAuth())
-                .forPaths(PathSelectors.regex(DEFAULT_INCLUDE_PATTERN))
+                .forPaths(PathSelectors.regex(Constants.DEFAULT_INCLUDE_PATTERN))
                 .build();
     }
 
@@ -84,6 +83,6 @@ public class SwaggerConfiguration {
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
         return Lists.newArrayList(
-                new SecurityReference("JWT", authorizationScopes));
+                new SecurityReference(Constants.JWT, authorizationScopes));
     }
 }

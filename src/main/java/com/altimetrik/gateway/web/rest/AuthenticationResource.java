@@ -1,11 +1,11 @@
 package com.altimetrik.gateway.web.rest;
 
+import com.altimetrik.gateway.config.Constants;
+import com.altimetrik.gateway.config.security.jwt.JwtProvider;
 import com.altimetrik.gateway.dto.AuthenticationRequest;
 import com.altimetrik.gateway.dto.AuthenticationResponse;
-import com.altimetrik.gateway.security.CustomUserDetailsService;
-import com.altimetrik.gateway.security.jwt.JwtFilter;
-import com.altimetrik.gateway.security.jwt.JwtProvider;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,47 +13,52 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.lang.invoke.MethodHandles;
 
 @RestController
 @RequestMapping("/api")
 public class AuthenticationResource {
 
-    @Autowired
+    private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private JwtProvider jwtTokenUtil;
+    private JwtProvider jwtProvider;
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    public AuthenticationResource(AuthenticationManager authenticationManager, JwtProvider jwtProvider) {
+        this.authenticationManager = authenticationManager;
+        this.jwtProvider = jwtProvider;
+    }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authenticationRequest)
-        throws Exception {
-        Authentication authentication = null;
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
+        Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken
                     (authenticationRequest.getUsername(), authenticationRequest.getPassword())
             );
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException("Incorrect username or password", e);
         }
-        catch (BadCredentialsException e) {
-            throw new Exception("Incorrect username or password", e);
-        }
 
-
-        final UserDetails userDetails = customUserDetailsService
-                .loadUserByUsername(authenticationRequest.getUsername());
-
-        final String jwt = jwtTokenUtil.createToken(authentication, userDetails.getUsername());
+        final AuthenticationResponse response =
+                jwtProvider.createToken(authentication, authenticationRequest.getUsername());
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
-        return new ResponseEntity<>(new AuthenticationResponse(jwt), httpHeaders, HttpStatus.OK);
+        httpHeaders.add(Constants.AUTHORIZATION, Constants.BEARER + response.getJwt());
+        return new ResponseEntity<>(response, httpHeaders, HttpStatus.OK);
+    }
+
+    @GetMapping("/refreshToken")
+    public ResponseEntity<AuthenticationResponse> refreshToken(@RequestHeader(Constants.AUTHORIZATION) final String token) {
+
+        final AuthenticationResponse response = jwtProvider.refreshToken(token.substring(7));
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(Constants.AUTHORIZATION, Constants.BEARER + response.getJwt());
+        return new ResponseEntity<>(response, httpHeaders, HttpStatus.OK);
     }
 
 }
