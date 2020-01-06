@@ -62,7 +62,6 @@ springdoc:
   swagger-ui:
     path: /swagger
 
-
 altimetrik:
   jwt:
     secret: ThisValueWillComeFromSpringConfigServerWhichInTurnWouldFetchItFromGitRepo
