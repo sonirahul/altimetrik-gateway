@@ -44,10 +44,12 @@ public class SwaggerConfiguration {
                 "http://example.com",
                 vext);
 
-        Docket docket = new Docket(DocumentationType.SWAGGER_2)
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .paths(PathSelectors.regex(Constants.DEFAULT_INCLUDE_PATTERN))
+                .build()
                 .apiInfo(apiInfo)
                 .pathMapping("/")
-                .apiInfo(ApiInfo.DEFAULT)
                 .forCodeGeneration(true)
                 .genericModelSubstitutes(ResponseEntity.class)
                 .ignoredParameterTypes(SpringDataWebProperties.Pageable.class)
@@ -58,11 +60,6 @@ public class SwaggerConfiguration {
                 .securityContexts(Lists.newArrayList(securityContext()))
                 .securitySchemes(Lists.newArrayList(apiKey()))
                 .useDefaultResponseMessages(false);
-
-        docket = docket.select()
-                .paths(PathSelectors.regex(Constants.DEFAULT_INCLUDE_PATTERN))
-                .build();
-        return docket;
     }
 
 
